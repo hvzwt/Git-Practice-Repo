@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello Git - Interactive GSAP Animation</title>
+    <!-- Tailwind CSS for modern responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- GSAP (GreenSock Animation Platform) Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styles for word animation clips */
+        .word-wrapper {
+            display: inline-block;
+            overflow: hidden;
+            vertical-align: top;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 min-h-screen text-white flex flex-col justify-between items-center p-6 select-none overflow-hidden">
+
+    <!-- Top Header / Metadata badge -->
+    <header class="w-full max-w-4xl flex justify-between items-center opacity-0 header-item">
+        <div class="flex items-center space-x-2">
+            <span class="inline-block w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Git Practice Environment</span>
+        </div>
+        <div class="bg-slate-800/80 border border-slate-700/60 px-3 py-1.5 rounded-full text-xs text-slate-300 font-mono">
+            branch: <span class="text-indigo-400 font-bold">staging</span>
+        </div>
+    </header>
+
+    <!-- Main Center Content Stage -->
+    <main class="flex-1 flex flex-col justify-center items-center text-center my-auto">
+        <!-- Main Animated Headline -->
+        <h1 class="text-5xl sm:text-7xl md:text-9xl font-extrabold tracking-tight text-white mb-6 flex flex-wrap justify-center gap-x-6 gap-y-2">
+            <span class="word-wrapper">
+                <span class="word inline-block transform translate-y-full opacity-0">Hello</span>
+            </span>
+            <span class="word-wrapper">
+                <span class="word inline-block transform translate-y-full opacity-0 text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-sky-200 to-white">Git</span>
+            </span>
+        </h1>
+
+        <!-- Subtitle reveal -->
+        <p class="subtitle text-slate-400 text-base sm:text-xl max-w-md mx-auto font-light tracking-wide opacity-0 transform translate-y-4">
+            Version control initialized. Ready to stage, commit, and push your code.
+        </p>
+
+        <!-- Interactive Replay Button -->
+        <div class="cta-button mt-8 opacity-0 transform translate-y-4">
+            <button id="replayBtn" class="group relative inline-flex items-center gap-2 px-6 py-3 rounded-full bg-indigo-600 hover:bg-indigo-500 active:scale-95 transition-all duration-200 text-sm font-medium shadow-lg shadow-indigo-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform group-hover:rotate-180 duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Replay Animation
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer with helpful Git hint -->
+    <footer class="w-full max-w-xl opacity-0 footer-item">
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 backdrop-blur-md text-xs font-mono text-slate-400 text-center">
+            <span class="text-slate-500">$</span> git add index.html &amp;&amp; git commit -m <span class="text-emerald-400">"Add animated index page"</span>
+        </div>
+    </footer>
+
+    <script>
+        // Wait until DOM content is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Create a GSAP timeline with default ease setting
+            const tl = gsap.timeline({
+                defaults: { ease: 'power4.out', duration: 1.2 }
+            });
+
+            function runAnimation() {
+                // Reset states
+                tl.clear();
+
+                // Sequence 1: Reveal words sequentially ('Hello' then 'Git')
+                tl.to('.word', {
+                    y: '0%',
+                    opacity: 1,
+                    stagger: 0.3, // Delay between 'Hello' and 'Git'
+                    duration: 1.1,
+                    ease: 'back.out(1.4)'
+                })
+                // Sequence 2: Fade & slide up subtitle
+                .to('.subtitle', {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.8
+                }, '-=0.4')
+                // Sequence 3: Reveal header, replay button, and command footer
+                .to(['.cta-button', '.header-item', '.footer-item'], {
+                    y: 0,
+                    opacity: 1,
+                    stagger: 0.15,
+                    duration: 0.8
+                }, '-=0.4');
+            }
+
+            // Start animation on page load
+            runAnimation();
+
+            // Replay animation on button click
+            document.getElementById('replayBtn').addEventListener('click', () => {
+                // Instantly reset elements to starting positions before replaying
+                gsap.set('.word', { y: '100%', opacity: 0 });
+                gsap.set(['.subtitle', '.cta-button', '.header-item', '.footer-item'], { y: 16, opacity: 0 });
+                
+                runAnimation();
+            });
+        });
+    </script>
+</body>
+</html>
