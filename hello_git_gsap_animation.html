@@ -8,11 +8,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- GSAP (GreenSock Animation Platform) Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <!-- Google Font: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            color: #f8fafc;
+            overflow-x: hidden;
         }
 
         .word-wrapper {
@@ -44,184 +52,198 @@
             transform: scaleX(1);
         }
 
+        /* 3D WORK Section Styling - Inspired by wodniack.dev */
         .work-section {
             position: relative;
-            width: min(1200px, calc(100vw - 2rem));
+            width: 100%;
+            height: 600vh; /* Smooth scrolling duration through 34 tiles */
             margin-top: 4rem;
-            padding: 2rem 0 4rem;
+            background: #020617;
         }
 
-        .work-header {
-            display: flex;
-            align-items: end;
-            justify-content: space-between;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            padding: 0 0.5rem;
-        }
-
-        .work-kicker {
-            font-size: 0.72rem;
-            letter-spacing: 0.26em;
-            text-transform: uppercase;
-            color: rgba(148, 163, 184, 0.85);
-        }
-
-        .work-title {
-            font-size: clamp(2.2rem, 5vw, 5rem);
-            line-height: 0.92;
-            letter-spacing: -0.08em;
-            font-weight: 800;
-            color: #f8fafc;
-        }
-
-        .work-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 1.25rem;
-        }
-
-        .work-card {
-            position: relative;
-            min-height: 500px;
+        .work-sticky {
+            position: sticky;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
-            overflow: hidden;
-            border-radius: 1.6rem;
-            border: 1px solid rgba(148, 163, 184, 0.18);
-            background: rgba(15, 23, 42, 0.72);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 30px 80px rgba(2, 6, 23, 0.5);
-            transform: translateY(40px);
-            opacity: 0;
-            transition: transform 0.5s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, rgba(2, 6, 23, 0.98) 80%);
+            border-top: 1px solid rgba(148, 163, 184, 0.15);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.15);
         }
 
-        .work-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(165, 180, 252, 0.38);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 38px 90px rgba(15, 23, 42, 0.75);
-        }
-
-        .work-card::before {
-            content: "";
+        /* Background 3D Letters "WORK" */
+        .work-bg-title {
             position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 0.18) 30%, rgba(8, 13, 28, 0.92) 100%);
             z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(6rem, 22vw, 24rem);
+            font-weight: 900;
+            line-height: 0.78;
+            letter-spacing: -0.06em;
+            text-transform: uppercase;
+            color: rgba(148, 163, 184, 0.07);
+            user-select: none;
+            pointer-events: none;
+            perspective: 30rem;
+            transform-style: preserve-3d;
         }
 
-        .work-card::after {
-            content: "";
+        .work-bg-letter {
+            display: block;
+            transition: transform 0.1s ease-out;
+            will-change: transform;
+            text-shadow: 0 0 40px rgba(99, 102, 241, 0.05);
+        }
+
+        /* Top HUD Bar */
+        .work-hud {
             position: absolute;
-            inset: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 1.2rem;
-            z-index: 2;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 0.6rem 1.4rem;
+            border-radius: 9999px;
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            font-size: 0.75rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            font-weight: 700;
         }
 
-        .work-preview {
+        .work-hud-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #818cf8;
+            box-shadow: 0 0 10px #818cf8;
+        }
+
+        .work-hud-bar {
+            width: 100px;
+            height: 3px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .work-hud-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #6366f1, #38bdf8);
+            border-radius: 2px;
+            transition: width 0.1s linear;
+        }
+
+        /* 3D Scene Stage */
+        .work-scene-3d {
             position: absolute;
             inset: 0;
-            background: var(--card-gradient);
-            transform: scale(1.08);
-            transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), filter 0.7s ease;
+            z-index: 5;
+            width: 100%;
+            height: 100%;
+            perspective: 42rem;
+            transform-style: preserve-3d;
+            overflow: hidden;
+            pointer-events: none;
         }
 
-        .work-card:hover .work-preview {
-            transform: scale(1.15);
-            filter: saturate(1.1);
-        }
-
-        .work-preview .shape {
+        /* 3D Work Card Tile */
+        .work-card-3d {
             position: absolute;
-            border-radius: 50%;
-            filter: blur(10px);
-            opacity: 0.9;
-        }
-
-        .work-preview .shape:nth-child(1) {
-            width: 18rem;
-            height: 18rem;
-            right: -2rem;
-            top: 2rem;
-            background: rgba(255,255,255,0.2);
-        }
-
-        .work-preview .shape:nth-child(2) {
-            width: 12rem;
-            height: 12rem;
-            left: 1.5rem;
-            bottom: 2rem;
-            background: rgba(165, 180, 252, 0.38);
-        }
-
-        .work-preview .shape:nth-child(3) {
-            width: 22rem;
-            height: 22rem;
+            top: 50%;
             left: 50%;
-            top: 55%;
-            transform: translate(-50%, -50%);
-            background: rgba(15, 23, 42, 0.22);
-            border: 1px solid rgba(255,255,255,0.18);
+            z-index: 5;
+            width: min(480px, 46vw);
+            border-radius: 0.85rem;
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            background: rgba(15, 23, 42, 0.92);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform-style: preserve-3d;
+            will-change: transform, opacity;
+            padding: 0.45rem 0.45rem 0;
+            text-decoration: none;
+            display: block;
+            opacity: 0;
+            pointer-events: none;
+            transition: border-color 0.35s ease, box-shadow 0.35s ease;
         }
 
-        .work-card-content {
+        @media (max-width: 768px) {
+            .work-card-3d {
+                width: min(340px, 78vw);
+            }
+        }
+
+        .work-card-3d:hover {
+            border-color: rgba(165, 180, 252, 0.8);
+            box-shadow: 0 35px 90px rgba(99, 102, 241, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .work-card-inner {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 0.6rem;
+            overflow: hidden;
+        }
+
+        .work-card-media {
             position: relative;
-            z-index: 3;
-            padding: 1.25rem 1.25rem 1.4rem;
+            width: 100%;
+            aspect-ratio: 16 / 9.5;
+            background: #090d16;
+            border-radius: 0.5rem;
+            overflow: hidden;
         }
 
-        .work-meta {
+        .work-card-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .work-card-caption {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 1rem;
-            margin-bottom: 1.1rem;
-            color: rgba(226, 232, 240, 0.82);
-            font-size: 0.68rem;
-            letter-spacing: 0.18em;
+            padding: 0.65rem 0.75rem;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.75rem;
             text-transform: uppercase;
-        }
-
-        .work-title-card {
-            margin: 0;
-            font-size: clamp(1.5rem, 2vw, 2.4rem);
-            line-height: 0.95;
-            letter-spacing: -0.06em;
+            letter-spacing: 0.12em;
+            color: #f8fafc;
             font-weight: 700;
-            color: white;
         }
 
-        .work-arrow {
-            width: 2.6rem;
-            height: 2.6rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 9999px;
-            border: 1px solid rgba(255,255,255,0.18);
-            background: rgba(15, 23, 42, 0.28);
-            transition: transform 0.35s ease, border-color 0.35s ease;
-        }
-
-        .work-card:hover .work-arrow {
-            transform: translateX(4px) rotate(-45deg);
-            border-color: rgba(165, 180, 252, 0.5);
-        }
-
-        @media (max-width: 900px) {
-            .work-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .work-card {
-                min-height: 420px;
-            }
+        .work-card-key {
+            font-size: 0.7rem;
+            color: rgba(148, 163, 184, 0.65);
+            font-weight: 400;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 min-h-screen text-white flex flex-col justify-between items-center p-6 select-none overflow-x-hidden">
+<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 min-h-screen text-white flex flex-col justify-between items-center p-6 select-none">
 
     <!-- Top Header / Navigation -->
     <header class="w-full max-w-6xl opacity-0 header-item">
@@ -237,7 +259,7 @@
             </div>
 
             <div class="hidden items-center gap-8 md:flex">
-                <a href="#" class="nav-link text-[10px] uppercase tracking-[0.26em] text-slate-300">Work</a>
+                <a href="#work" class="nav-link text-[10px] uppercase tracking-[0.26em] text-slate-300">Work</a>
                 <a href="#" class="nav-link text-[10px] uppercase tracking-[0.26em] text-slate-300">Studio</a>
                 <a href="#" class="nav-link text-[10px] uppercase tracking-[0.26em] text-slate-300">Journal</a>
                 <a href="#" class="nav-link text-[10px] uppercase tracking-[0.26em] text-slate-300">Contact</a>
@@ -258,7 +280,7 @@
     <!-- Main Center Content Stage -->
     <main class="flex-1 flex flex-col justify-center items-center text-center my-auto">
         <!-- Main Animated Headline -->
-        <h1 class="text-5xl sm:text-7xl md:text-9xl font-extrabold tracking-tight text-white mb-6 flex flex-wrap justify-center     gap-x-6 gap-y-2">
+        <h1 class="text-5xl sm:text-7xl md:text-9xl font-extrabold tracking-tight text-white mb-6 flex flex-wrap justify-center gap-x-6 gap-y-2">
             <span class="word-wrapper">
                 <span class="word inline-block transform translate-y-full opacity-0">Hello</span>
             </span>
@@ -284,96 +306,120 @@
     </main>
 
     <!-- Footer with helpful Git hint -->
-    <footer class="w-full max-w-xl opacity-0 footer-item">
+    <footer class="w-full max-w-xl opacity-0 footer-item mb-12">
         <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 backdrop-blur-md text-xs font-mono text-slate-400 text-center">
             <span class="text-slate-500">$</span> git add index.html &amp;&amp; git commit -m <span class="text-emerald-400">"Add animated index page"</span>
         </div>
     </footer>
 
-    <section class="work-section">
-        <div class="work-header">
-            <div>
-                <div class="work-kicker">Selected Work</div>
-                <h2 class="work-title">Creative products with motion.</h2>
+    <!-- Interactive 3D Work Section (Replicated from wodniack.dev) -->
+    <section id="work" class="work-section" aria-label="Featured work">
+        <div class="work-sticky">
+            <!-- HUD Progress Counter -->
+            <div class="work-hud">
+                <span class="work-hud-dot"></span>
+                <span>Work — <span class="work-current-count text-indigo-300">01</span> / 34</span>
+                <div class="work-hud-bar">
+                    <div class="work-hud-progress"></div>
+                </div>
             </div>
-            <div class="work-kicker">2026</div>
-        </div>
 
-        <div class="work-grid">
-            <article class="work-card" style="--card-gradient: linear-gradient(135deg, #7c3aed 0%, #312e81 35%, #1e293b 100%);">
-                <div class="work-preview">
-                    <span class="shape"></span>
-                    <span class="shape"></span>
-                    <span class="shape"></span>
-                </div>
-                <div class="work-card-content">
-                    <div class="work-meta">
-                        <span>01 / Brand</span>
-                        <span class="work-arrow">→</span>
-                    </div>
-                    <h3 class="work-title-card">Nova Visual System</h3>
-                </div>
-            </article>
+            <!-- Background 3D "WORK" Typography -->
+            <div class="work-bg-title" aria-hidden="true">
+                <span class="work-bg-letter">W</span>
+                <span class="work-bg-letter">O</span>
+                <span class="work-bg-letter">R</span>
+                <span class="work-bg-letter">K</span>
+            </div>
 
-            <article class="work-card" style="--card-gradient: linear-gradient(135deg, #0f172a 0%, #1d4ed8 30%, #67e8f9 100%);">
-                <div class="work-preview">
-                    <span class="shape"></span>
-                    <span class="shape"></span>
-                    <span class="shape"></span>
-                </div>
-                <div class="work-card-content">
-                    <div class="work-meta">
-                        <span>02 / Product</span>
-                        <span class="work-arrow">→</span>
-                    </div>
-                    <h3 class="work-title-card">Flow Motion Studio</h3>
-                </div>
-            </article>
-
-            <article class="work-card" style="--card-gradient: linear-gradient(135deg, #111827 0%, #0f766e 30%, #a7f3d0 100%);">
-                <div class="work-preview">
-                    <span class="shape"></span>
-                    <span class="shape"></span>
-                    <span class="shape"></span>
-                </div>
-                <div class="work-card-content">
-                    <div class="work-meta">
-                        <span>03 / Campaign</span>
-                        <span class="work-arrow">→</span>
-                    </div>
-                    <h3 class="work-title-card">Signal Launch</h3>
-                </div>
-            </article>
+            <!-- 3D Scene Viewport -->
+            <div class="work-scene-3d" id="workScene">
+                <!-- 34 Project Cards dynamically loaded -->
+            </div>
         </div>
     </section>
 
     <script>
-        // Wait until DOM content is fully loaded
+        // Exact 34 tiles from wodniack.dev
+        const workProjects = [
+            { text: "Generous Branding", key: "#3vva-0000/34", src: "https://wodniack.dev/_astro/Generous-Slider.DCY9Q-MO.mp4", href: "https://generousbranding.com" },
+            { text: "Hunter Farmer", key: "#dbq8-0001/34", src: "https://wodniack.dev/_astro/Hf-Navigation.Gkvt7Etn.mp4", href: "#" },
+            { text: "Generous Branding", key: "#ny2d-0002/34", src: "https://wodniack.dev/_astro/Generous-Transition.Dysz98iA.mp4", href: "https://generousbranding.com" },
+            { text: "Nod Coding Bootcamp", key: "#87va-0003/34", src: "https://wodniack.dev/_astro/Nod-Intro.DujLdLjK.mp4", href: "https://nodcoding.com" },
+            { text: "Rudl und Schwarm", key: "#t44q-0004/34", src: "https://wodniack.dev/_astro/Rudl-Transition.CcgAkF6S.mp4", href: "https://www.rudlundschwarm.at/" },
+            { text: "24/7 Artists", key: "#3g5d-0005/34", src: "https://wodniack.dev/_astro/247-Foot.CfYyug9d.mp4", href: "https://247artists.com/" },
+            { text: "Nod Coding Bootcamp", key: "#wksl-0006/34", src: "https://wodniack.dev/_astro/Nod-404.DvJptcy9.mp4", href: "https://nodcoding.com" },
+            { text: "Duten", key: "#0qh5-0007/34", src: "https://wodniack.dev/_astro/Duten-Shapes.DvaTdo7l.mp4", href: "https://duten.com" },
+            { text: "Vanguart", key: "#y15t-0008/34", src: "https://wodniack.dev/_astro/Vanguart-Scroll-3.BwmkFszE.mp4", href: "https://vanguart.com/" },
+            { text: "Generous Branding", key: "#a24d-0009/34", src: "https://wodniack.dev/_astro/Generous-Scroll1.0UenKQ_7.mp4", href: "https://generousbranding.com" },
+            { text: "Nod Coding Bootcamp", key: "#1j4c-0010/34", src: "https://wodniack.dev/_astro/Nod-Transition.Cgjsr7Jp.mp4", href: "https://nodcoding.com" },
+            { text: "Pantoufle Hôtel", key: "#m2my-0011/34", src: "https://wodniack.dev/_astro/Pantoufle-Clip.BfFhcegb.mp4", href: "https://www.pantoufle-hotels.fr/en/" },
+            { text: "Vanguart", key: "#d6fu-0012/34", src: "https://wodniack.dev/_astro/Vanguart-Scroll-2.DRw1ZqR4.mp4", href: "https://vanguart.com/" },
+            { text: "24/7 Artists", key: "#oqga-0013/34", src: "https://wodniack.dev/_astro/247-Scroll-1.BpbKKJ7S.mp4", href: "https://247artists.com/" },
+            { text: "Rudl und Schwarm", key: "#sxvc-0014/34", src: "https://wodniack.dev/_astro/Rudl-Scroll.DmL08CDl.mp4", href: "https://www.rudlundschwarm.at/" },
+            { text: "Vanguart", key: "#wfll-0015/34", src: "https://wodniack.dev/_astro/Vanguart-Scroll-1.kd442gP8.mp4", href: "https://vanguart.com/" },
+            { text: "CodePen", key: "#5w0n-0016/34", src: "https://wodniack.dev/_astro/Pen-4.BOCLYASq.mp4", href: "https://codepen.io/wodniack" },
+            { text: "Duten", key: "#emwy-0017/34", src: "https://wodniack.dev/_astro/Duten-3D.CnijAj5p.mp4", href: "https://duten.com" },
+            { text: "24/7 Artists", key: "#cul2-0018/34", src: "https://wodniack.dev/_astro/247-Hero.DKz-ABVC.mp4", href: "https://247artists.com/" },
+            { text: "Duten", key: "#0ngv-0019/34", src: "https://wodniack.dev/_astro/Duten-Fluid.t8C3AKXP.mp4", href: "https://duten.com" },
+            { text: "Vanguart", key: "#kqon-0020/34", src: "https://wodniack.dev/_astro/Vanguart-360.DXA8KizZ.mp4", href: "https://vanguart.com/" },
+            { text: "24/7 Artists", key: "#frnh-0021/34", src: "https://wodniack.dev/_astro/247-Scroll-2.eL-R-Y1L.mp4", href: "https://247artists.com/" },
+            { text: "QBIT Capital", key: "#z0bj-0022/34", src: "https://wodniack.dev/_astro/Qbit-Shape.BySbOvpY.mp4", href: "https://qbitcapital.xyz" },
+            { text: "Tissot", key: "#s8nw-0023/34", src: "https://wodniack.dev/_astro/Tissot-360.qz0Gq5Ys.mp4", href: "#" },
+            { text: "Duten", key: "#yhcw-0024/34", src: "https://wodniack.dev/_astro/Duten-Products.D0b17Eb7.mp4", href: "https://duten.com" },
+            { text: "Pantoufle Hôtel", key: "#ppxm-0025/34", src: "https://wodniack.dev/_astro/Pantoufle-Transition.CpZVk1ej.mp4", href: "https://www.pantoufle-hotels.fr/en/" },
+            { text: "Pantoufle Hôtel", key: "#ffo8-0026/34", src: "https://wodniack.dev/_astro/Pantoufle-Button.B5UTdu2U.mp4", href: "https://www.pantoufle-hotels.fr/en/" },
+            { text: "Deside Recrutement", key: "#mxe3-0027/34", src: "https://wodniack.dev/_astro/Deside-Site.CmhdHL0t.mp4", href: "https://www.desiderecrutement.com/en/" },
+            { text: "QBIT Capital", key: "#suav-0028/34", src: "https://wodniack.dev/_astro/Qbit-Menu.DQBETGn4.mp4", href: "https://qbitcapital.xyz" },
+            { text: "Nod Coding Bootcamp", key: "#7vol-0029/34", src: "https://wodniack.dev/_astro/Nod-Links.De8GBDpL.mp4", href: "https://nodcoding.com" },
+            { text: "Honor Society Films", key: "#i1er-0030/34", src: "https://wodniack.dev/_astro/HS-Site.Br4spn2E.mp4", href: "https://honorsociety.tv/" },
+            { text: "Nod Coding Bootcamp", key: "#kive-0031/34", src: "https://wodniack.dev/_astro/Nod-Flower.VBa6NQlZ.mp4", href: "https://nodcoding.com" },
+            { text: "Duten", key: "#t7cu-0032/34", src: "https://wodniack.dev/_astro/Duten-Intro.CP3CW1O6.mp4", href: "https://duten.com" },
+            { text: "CodePen", key: "#508u-0033/34", src: "https://wodniack.dev/_astro/Pen-6.CMyHVvwm.mp4", href: "https://codepen.io/wodniack" }
+        ];
+
+        gsap.registerPlugin(ScrollTrigger);
+
         document.addEventListener('DOMContentLoaded', () => {
-            // Create a GSAP timeline with default ease setting
+            // Render 34 Tiles into Scene
+            const sceneEl = document.getElementById('workScene');
+            workProjects.forEach((proj, idx) => {
+                const article = document.createElement('article');
+                article.className = 'work-card-3d';
+                article.setAttribute('data-index', idx);
+                article.innerHTML = `
+                    <a href="${proj.href}" target="_blank" rel="noopener" class="work-card-inner">
+                        <div class="work-card-media">
+                            <video class="work-card-video" data-src="${proj.src}" loop muted playsinline preload="none"></video>
+                        </div>
+                        <div class="work-card-caption">
+                            <span class="work-card-title">${proj.text}</span>
+                            <span class="work-card-key">${proj.key}</span>
+                        </div>
+                    </a>
+                `;
+                sceneEl.appendChild(article);
+            });
+
+            // Entrance timeline for hero
             const tl = gsap.timeline({
                 defaults: { ease: 'power4.out', duration: 1.2 }
             });
 
             function runAnimation() {
-                // Reset states
                 tl.clear();
-
-                // Sequence 1: Reveal words sequentially ('Hello' then 'Git')
                 tl.to('.word', {
                     y: '0%',
                     opacity: 1,
-                    stagger: 0.3, // Delay between 'Hello' and 'Git'
+                    stagger: 0.3,
                     duration: 1.1,
                     ease: 'back.out(1.4)'
                 })
-                // Sequence 2: Fade & slide up subtitle
                 .to('.subtitle', {
                     y: 0,
                     opacity: 1,
                     duration: 0.8
                 }, '-=0.4')
-                // Sequence 3: Reveal header, replay button, and command footer
                 .to(['.cta-button', '.header-item', '.footer-item'], {
                     y: 0,
                     opacity: 1,
@@ -382,35 +428,121 @@
                 }, '-=0.4');
             }
 
-            // Start animation on page load
             runAnimation();
 
-            // Replay animation on button click
             document.getElementById('replayBtn').addEventListener('click', () => {
-                // Instantly reset elements to starting positions before replaying
                 gsap.set('.word', { y: '100%', opacity: 0 });
                 gsap.set(['.subtitle', '.cta-button', '.header-item', '.footer-item'], { y: 16, opacity: 0 });
-                gsap.set('.work-card', { y: 40, opacity: 0 });
-                
                 runAnimation();
-
-                gsap.to('.work-card', {
-                    y: 0,
-                    opacity: 1,
-                    duration: 1,
-                    stagger: 0.18,
-                    ease: 'power3.out',
-                    delay: 0.8
-                });
             });
 
-            gsap.to('.work-card', {
-                y: 0,
-                opacity: 1,
-                duration: 1.1,
-                stagger: 0.18,
-                ease: 'power3.out',
-                delay: 0.35
+            // 3D Work ScrollTrigger Logic
+            const workSection = document.querySelector('.work-section');
+            const cardEls = document.querySelectorAll('.work-card-3d');
+            const bgLetters = document.querySelectorAll('.work-bg-letter');
+            const progressFill = document.querySelector('.work-hud-progress');
+            const currentCountEl = document.querySelector('.work-current-count');
+
+            const totalCount = cardEls.length; // 34
+
+            // Pre-calculate 3D card layout parameters (alternating vertical y and scale)
+            const cardsData = Array.from(cardEls).map((card, i) => {
+                const video = card.querySelector('video');
+                // Alternating float height (-0.4 to +0.4)
+                const yPos = (Math.sin(i * 1.35) * 0.45);
+                const scaleVal = 0.88 + (Math.cos(i * 0.7) * 0.12);
+                return {
+                    el: card,
+                    video,
+                    videoLoaded: false,
+                    y: yPos,
+                    scale: scaleVal
+                };
+            });
+
+            // ScrollTrigger Timeline
+            ScrollTrigger.create({
+                trigger: workSection,
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: 0.6,
+                onUpdate: (self) => {
+                    const scrollProgress = self.progress; // 0.0 to 1.0
+
+                    // Update HUD Progress
+                    if (progressFill) progressFill.style.width = `${scrollProgress * 100}%`;
+                    if (currentCountEl) {
+                        const activeNum = Math.min(Math.floor(scrollProgress * totalCount) + 1, totalCount);
+                        currentCountEl.textContent = String(activeNum).padStart(2, '0');
+                    }
+
+                    // Background 3D Typography tilt
+                    bgLetters.forEach((letter, idx) => {
+                        const head = (scrollProgress - 0.5) * -2;
+                        const rotY = head * (idx % 2 === 0 ? -12 : 12);
+                        const transX = head * (idx - 1.5) * 20;
+                        letter.style.transform = `rotateY(${rotY}deg) translateX(${transX}px)`;
+                    });
+
+                    // 3D Tiles Perspective Path Logic (Matching wodniack.dev)
+                    const cardSpread = 0.085; // spacing between consecutive cards
+                    const windowSpan = 1 + cardSpread * (totalCount - 1);
+
+                    cardsData.forEach((item, i) => {
+                        const cardCenter = (i * cardSpread) / windowSpan;
+                        const progress = (scrollProgress - cardCenter) * (windowSpan / cardSpread);
+
+                        // Range [-1.4, 1.4] is visible in the 3D perspective viewport
+                        if (progress < -1.45 || progress > 1.45) {
+                            item.el.style.opacity = '0';
+                            item.el.style.pointerEvents = 'none';
+                            if (item.video && !item.video.paused) {
+                                item.video.pause();
+                            }
+                        } else {
+                            // Calculate smooth fade envelope
+                            let opacity = 1;
+                            if (progress < -0.85) {
+                                opacity = (progress + 1.45) / 0.6;
+                            } else if (progress > 0.85) {
+                                opacity = (1.45 - progress) / 0.6;
+                            }
+                            opacity = Math.max(0, Math.min(1, opacity));
+
+                            item.el.style.opacity = opacity;
+                            item.el.style.pointerEvents = opacity > 0.5 ? 'auto' : 'none';
+
+                            // Lazy video playback when in focus
+                            if (item.video && Math.abs(progress) < 0.95) {
+                                if (!item.videoLoaded) {
+                                    item.video.src = item.video.getAttribute('data-src');
+                                    item.videoLoaded = true;
+                                }
+                                if (item.video.paused) {
+                                    item.video.play().catch(() => {});
+                                }
+                            } else if (item.video && !item.video.paused) {
+                                item.video.pause();
+                            }
+
+                            // 3D Transform calculations:
+                            // rotateY: card tilts as it moves across screen (-20deg to +20deg)
+                            // translate3d: X sweeps across screen (-55vw to +55vw), Y moves based on organic height, Z creates depth arc
+                            const rotateY = progress * -22;
+                            const rotateX = Math.sin(progress * Math.PI) * 4;
+                            const translateX = progress * 62; // percentage of viewport width
+                            const translateY = item.y * 50;   // percentage height displacement
+                            const translateZ = progress * progress * -6.5; // rem depth arc
+
+                            item.el.style.transform = `
+                                translate3d(calc(-50% + ${translateX}vw), calc(-50% + ${translateY}%), ${translateZ}rem)
+                                rotateY(${rotateY}deg)
+                                rotateX(${rotateX}deg)
+                                scale(${item.scale})
+                            `;
+                        }
+                    });
+                }
             });
         });
     </script>
